@@ -15,7 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from pick_restful import views
+from pick_restful.views import GoogleLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.index),
+    path('login/google/',GoogleLoginView.as_view())
 ]
