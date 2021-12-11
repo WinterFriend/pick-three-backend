@@ -1,1 +1,2 @@
-*.pyc
+pick/pick_restful/__pycache__
+pick/pick_restful/migrations
