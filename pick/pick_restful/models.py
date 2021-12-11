@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 
 class SocialPlatform(models.Model):
     platform = models.CharField(max_length=20, default=0)
@@ -8,7 +9,7 @@ class SocialPlatform(models.Model):
 
 class User(models.Model):
     last_login      = models.DateTimeField('date published')
-    date_joined     = models.DateTimeField('date published', default=datetime.datetime.now)
+    date_joined     = models.DateTimeField('date published', default=datetime.now)
     date_birth      = models.DateField()
     email           = models.CharField(max_length=254)
     username        = models.CharField(max_length=254)
