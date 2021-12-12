@@ -1,13 +1,14 @@
 from django.shortcuts import render
 
 from django.http import HttpResponse
-from .models import User
 from django.views import View
+from django.shortcuts import redirect
+from .models import User
 
 # Create your views here.
 
 def index(request):
-        return HttpResponse("백엔드서버입니다.")
+        return redirect('https://wintyio.github.io/pick-three-frontend-intro-web/')
 
 class GoogleLoginView(View): 
         def get(self,request):
