@@ -3,19 +3,23 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views import View
 from django.shortcuts import redirect
-from .models import User
+from .models import User, SocialPlatform
 
-# Create your views here.
+import requests
 
 def index(request):
         return redirect('https://wintyio.github.io/pick-three-frontend-intro-web/')
 
 class GoogleLoginView(View): 
         def get(self,request):
-                token = request.headers["Auth"]
+                token = request.headers["Authorization"]
+                print('dd')
+                print(token) ###########################################################################
                 url = 'https://oauth2.googleapis.com/tokeninfo?id_token='
                 response = requests.get(url+token)
+                print("response: ", response)
                 user = response.json()
+                print("user : ", user) ###########################################################################
 
                 if User.objects.filter(social_login_id = user['sub']).exists():
                         user_data = User.objects.get(social_login_id=user['sub'])
@@ -29,8 +33,9 @@ class GoogleLoginView(View):
                 else:
                         user_data = User(social_login_id = user['sub'],
                                 name = user['name'],
-                                social = SocialPlatform.objects.get(platform ="google"),
-                                email = user.get('email', None)
+                                social = SocialPlatform.objects.get(platform="google"),
+                                email = user.get('email', "")
+                                #email = user['email']
                         )
                         user_data.save()
                         encoded_jwt = jwt.encode({'id': user_data.id}, wef_key, algorithm='HS256')
