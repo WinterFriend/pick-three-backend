@@ -8,7 +8,7 @@ from .models import User, SocialPlatform
 import requests
 
 def index(request):
-        return redirect('https://wintyio.github.io/pick-three-frontend-intro-web/')
+        return HttpResponse("연결성공")
 
 class GoogleLoginView(View): 
         def get(self,request):
