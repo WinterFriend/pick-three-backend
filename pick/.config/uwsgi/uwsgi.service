@@ -1,0 +1,15 @@
+[Unit]
+Description=uWSGI service
+After=syslog.target
+
+[Service]
+ExecStart=/home/ec2-user/back-end/venv/pick/bin/uwsgi -i /home/ec2-user/back-end/project/pick-three-backend/pick/.config/uwsgi/pick.ini
+
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
