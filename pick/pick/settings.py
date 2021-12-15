@@ -38,7 +38,7 @@ SECRET_KEY = get_secret("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['3.37.254.13', 'ec2-3-37-254-13.ap-northeast-2.compute.amazonaws.com', 'api.winty.io', '10.0.0.73', '52.78.120.64']
+ALLOWED_HOSTS = ['127.0.0.1', '3.37.254.13', 'ec2-3-37-254-13.ap-northeast-2.compute.amazonaws.com', 'api.winty.io', '10.0.0.73', '52.78.120.64']
 
 INSTALLED_APPS = [
     'rest_framework',
@@ -135,6 +135,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
