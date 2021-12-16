@@ -16,16 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from pick_restful import views
-from pick_restful.views import GoogleLoginView
+from pick_restful.views import GoogleLoginView, A
 
-from rest_framework_jwt.views import obtain_jwt_token
-from rest_framework_jwt.views import refresh_jwt_token
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
     path('login/google/',GoogleLoginView.as_view()),
-    path('a/', views.a),
-    #url(r'^api-token-auth/', obtain_jwt_token),
-    #url(r'^api-token-refresh/', refresh_jwt_token),
+    path('a/', A.as_view(), name="a"),
+
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pari'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 ]

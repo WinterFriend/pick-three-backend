@@ -4,3 +4,4 @@ pick/pick/__pycache__
 pick/secrets.json
 pick/logs
 pick/utils/__pycache__
+pick/static
