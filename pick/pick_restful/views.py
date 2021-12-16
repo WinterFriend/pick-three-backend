@@ -8,35 +8,55 @@ from django.conf import settings
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
-
-import requests
-
-def index(request):
-        return HttpResponse("연결성공")
-
-def a(request):
-        return JsonResponse({"aaaa": "aaa"})
-
-from rest_framework_jwt.settings import api_settings
-from rest_framework_jwt.compat import set_cookie_with_token
+import requests, json
 
 from pick_restful.models import User
 from pick_restful.services import user_record_login, user_get_or_create
 
-def jwt_login(user: User) -> HttpResponse:
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+from rest_framework_simplejwt.tokens import RefreshToken
 
-        payload = jwt_payload_handler(user)
-        token = jwt_encode_handler(payload)
-        user_record_login(user=user)
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 
-        return token
+def index(request):
+        print(request.method)
+        return HttpResponse("연결성공")
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
+def a(request):
+        return JsonResponse({"message": "Hello, world!"})
 
 
-class GoogleLoginView(View): 
+class A(APIView):
+        #permission_classes = [IsAuthenticated]
+        permission_classes = [AllowAny]
+        def get(self, request):
+                print(request.method)
+                return JsonResponse({"message": "Hello, world!"})
+
+        def post(self, request):
+                return JsonResponse({"message2": "Hello, world!"})
+
+
+
+def jwt_login(user: User):
+        refresh = RefreshToken.for_user(user)
+
+        print(  'refresh_token : ',     str(refresh))
+        print(  'access_token : ',      str(refresh.access_token))
+
+        return {
+                'refresh':      str(refresh),
+                'access':       str(refresh.access_token),
+        }
+
+
+
+class GoogleLoginView(APIView):
+        permission_classes = [AllowAny]
+
         def get(self,request):
                 token = request.headers["Authorization"]
                 url = 'https://oauth2.googleapis.com/tokeninfo?id_token='
@@ -52,11 +72,10 @@ class GoogleLoginView(View):
                         'email'         : user_json['email'],
                         'first_name'    : user_json['name'],
                         'last_name'     : user_json['name'],
-                        'date_birth'    : timezone.localtime(),
+                        #'date_birth'    : timezone.localtime(),
                 }
 
                 user, _ = user_get_or_create(**user_data)
 
                 token = jwt_login(user=user)
-                data = { "accesstoken" : token}
-                return JsonResponse(data)
+                return JsonResponse(token)

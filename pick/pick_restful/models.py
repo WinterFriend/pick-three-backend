@@ -15,7 +15,7 @@ class SocialPlatform(models.Model):
 
 class User(AbstractUser):
     username        = None
-    date_birth      = models.DateField(default=timezone.localtime)
+    #date_birth      = models.DateField(default=timezone.localtime)
     email           = models.EmailField(unique=True, db_index=True)
     secret_key      = models.CharField(max_length=255, default=get_random_secret_key)
 

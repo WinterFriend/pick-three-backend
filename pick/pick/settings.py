@@ -51,13 +51,14 @@ ALLOWED_HOSTS = ['127.0.0.1', '3.37.254.13', 'ec2-3-37-254-13.ap-northeast-2.com
 BASE_FRONTEND_URL = 'https://winty.io/login.html'
 
 INSTALLED_APPS = [
-    #drf-jwt
-    'rest_framework_jwt',
-    'rest_framework_jwt.blacklist',
+    #simplejwt
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 
     'rest_framework',
     'pick_restful',
     'corsheaders',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -67,14 +68,15 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
+#   'DEFAULT_METADATA_CLASS': None,
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticated',   # 인증된 사용자
+#       'rest_framework.permissions.IsAdminUser',       # 관리자
+#       'rest_framework.permissions.AllowAny',          # 모든 사용자
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-    ),
+        'rest_framework_simplejwt.authentication.JWTTokenUserAuthentication',
+    )
 }
 
 MIDDLEWARE = [
@@ -167,7 +169,7 @@ MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-##CORS
+#CORS
 CORS_ORIGIN_ALLOW_ALL=True
 CORS_ALLOW_CREDENTIALS = True
 
@@ -198,17 +200,33 @@ AUTH_USER_MODEL = 'pick_restful.User'
 #PRODUCTION_SETTINGS = env.bool('DJANGO_PRODUCTION_SETTINGS', default=False)
 PRODUCTION_SETTINGS = False
 
-JWT_EXPIRATION_DELTA_DEFAULT = 2.628e+6  # 1 month in seconds
-JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(
-        seconds=env.int(
-            'DJANGO_JWT_EXPIRATION_DELTA',
-            default=JWT_EXPIRATION_DELTA_DEFAULT
-        )
-    ),
-    'JWT_AUTH_HEADER_PREFIX': 'JWT',
-    'JWT_GET_USER_SECRET_KEY': lambda user: user.secret_key,
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'pick_restful.selectors.jwt_response_payload_handler',
-    'JWT_AUTH_COOKIE': 'jwt_token',
-    'JWT_AUTH_COOKIE_SAMESITE': 'None'
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME'     : datetime.timedelta(minutes=90),
+    'REFRESH_TOKEN_LIFETIME'    : datetime.timedelta(minutes=90),
+    'ROTATE_REFRESH_TOKENS'     : False,
+    'BLACKLIST_AFTER_ROTATION'  : False,
+    'UPDATE_LAST_LOGIN'         : True,
+
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUDIENCE': None,
+    'ISSUER': None,
+    'JWK_URL': None,
+    'LEEWAY': 0,
+
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
+
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+
+    'JTI_CLAIM': 'jti',
+
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': datetime.timedelta(minutes=5),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': datetime.timedelta(days=1),
 }
