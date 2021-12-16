@@ -14,6 +14,14 @@ from pathlib import Path
 import os, json
 from django.core.exceptions import ImproperlyConfigured
 import getpass
+import datetime
+import environ
+
+env = environ.Env(
+    DEBUG=(int, 0)
+)
+# reading .env file
+environ.Env.read_env('.env')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,7 +48,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '3.37.254.13', 'ec2-3-37-254-13.ap-northeast-2.compute.amazonaws.com', 'api.winty.io', '10.0.0.73', '52.78.120.64']
 
+BASE_FRONTEND_URL = 'https://winty.io/login.html'
+
 INSTALLED_APPS = [
+    #drf-jwt
+    'rest_framework_jwt',
+    'rest_framework_jwt.blacklist',
+
     'rest_framework',
     'pick_restful',
     'corsheaders',
@@ -51,6 +65,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -168,3 +193,22 @@ CORS_ALLOW_HEADERS = (
 )
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+AUTH_USER_MODEL = 'pick_restful.User'
+#PRODUCTION_SETTINGS = env.bool('DJANGO_PRODUCTION_SETTINGS', default=False)
+PRODUCTION_SETTINGS = False
+
+JWT_EXPIRATION_DELTA_DEFAULT = 2.628e+6  # 1 month in seconds
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(
+        seconds=env.int(
+            'DJANGO_JWT_EXPIRATION_DELTA',
+            default=JWT_EXPIRATION_DELTA_DEFAULT
+        )
+    ),
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
+    'JWT_GET_USER_SECRET_KEY': lambda user: user.secret_key,
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'pick_restful.selectors.jwt_response_payload_handler',
+    'JWT_AUTH_COOKIE': 'jwt_token',
+    'JWT_AUTH_COOKIE_SAMESITE': 'None'
+}
