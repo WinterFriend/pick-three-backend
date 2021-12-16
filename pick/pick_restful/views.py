@@ -43,7 +43,7 @@ class GoogleLoginView(View):
                 response = requests.get(url+token)
 
                 accept_status = response.status_code
-                if response != 200:
+                if accept_status != 200:
                         print("fail")
                         return JsonResponse({'err_msg': 'failed to asignin'}, status=accept_status)
                 
