@@ -1,47 +1,62 @@
 from django.shortcuts import render
-
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
 from django.shortcuts import redirect
-from .models import User, SocialPlatform
+from .models import User#, SocialPlatform
+from django.utils import timezone
+from django.conf import settings
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
 
 import requests
 
 def index(request):
         return HttpResponse("연결성공")
 
+def a(request):
+        return JsonResponse({"aaaa": "aaa"})
+
+from rest_framework_jwt.settings import api_settings
+from rest_framework_jwt.compat import set_cookie_with_token
+
+from pick_restful.models import User
+from pick_restful.services import user_record_login, user_get_or_create
+
+def jwt_login(user: User) -> HttpResponse:
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+        payload = jwt_payload_handler(user)
+        token = jwt_encode_handler(payload)
+        user_record_login(user=user)
+
+        return token
+
+
 class GoogleLoginView(View): 
         def get(self,request):
                 token = request.headers["Authorization"]
-                print('dd')
-                print(token) ###########################################################################
                 url = 'https://oauth2.googleapis.com/tokeninfo?id_token='
                 response = requests.get(url+token)
-                print("response: ", response)
-                user = response.json()
-                print("user : ", user) ###########################################################################
 
-                if User.objects.filter(social_login_id = user['sub']).exists():
-                        user_data = User.objects.get(social_login_id=user['sub'])
-                        encoded_jwt = jwt.encode({'id': user["sub"]}, wef_key, algorithm='HS256')
+                accept_status = response.status_code
+                if accept_status != 200:
+                        print("fail")
+                        return JsonResponse({'err_msg': 'failed to asignin'}, status=accept_status)
+                
+                user_json = response.json()
+                user_data = {
+                        'email'         : user_json['email'],
+                        'first_name'    : user_json['name'],
+                        'last_name'     : user_json['name'],
+                        'date_birth'    : timezone.localtime(),
+                }
 
-                        return JsonResponse({
-                                'access_token'  : encoded_jwt.decode('UTF-8'),
-                                'user_name'     : user['name'],
-                                'user_id'       : user_data.id
-                        }, status = 200)
-                else:
-                        user_data = User(social_login_id = user['sub'],
-                                name = user['name'],
-                                social = SocialPlatform.objects.get(platform="google"),
-                                email = user.get('email', "")
-                                #email = user['email']
-                        )
-                        user_data.save()
-                        encoded_jwt = jwt.encode({'id': user_data.id}, wef_key, algorithm='HS256')
+                user, _ = user_get_or_create(**user_data)
 
-                        return JsonResponse({
-                                'user_id'       : user_data.id,
-                                'user_name'     : user_data.username,
-                                'access_token'  : encoded_jwt.decode('UTF-8')
-                        }, status = 200)
+                token = jwt_login(user=user)
+                data = { "accesstoken" : token}
+                return JsonResponse(data)
