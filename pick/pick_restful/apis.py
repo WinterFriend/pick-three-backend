@@ -63,6 +63,7 @@ class GoogleLoginView(APIView):
                         'first_name'    : user_json['name'],
                         'last_name'     : user_json['name'],
                         'date_birth'    : timezone.localtime(),
+                        'last_login'    : timezone.localtime(),
                 }
 
                 user, _ = user_get_or_create(**user_data)

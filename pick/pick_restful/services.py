@@ -6,6 +6,7 @@ from django.core.management.utils import get_random_secret_key
 from utils import get_now
 
 from pick_restful.models import User, SocialPlatform
+from django.utils import timezone
 
 def user_create_superuser(email, password=None, **extra_fields) -> User:
     extra_fields = {
@@ -56,6 +57,8 @@ def user_get_or_create(*, email: str, social: str, **extra_data) -> Tuple[User, 
     user = User.objects.filter(email=email).first() # 이거 필터에서 소셜도 넣어야함 나중에 꼭!
     
     if user:
+        user.last_login = timezone.localtime()
+        user.save()
         return user, False
 
     return user_create(email=email, social=social, **extra_data), True
