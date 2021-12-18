@@ -5,23 +5,22 @@ from django.contrib.auth.models import AbstractUser
 from django.core.management.utils import get_random_secret_key
 from django.utils import timezone
 
-'''
+
 class SocialPlatform(models.Model):
     platform = models.CharField(max_length=20, default=0)
 
+    def __str__(self):
+        return self.platform
     class Meta:
         db_table = "social_platform"
-'''
+
 
 class User(AbstractUser):
     username        = None
-    #date_birth      = models.DateField(default=timezone.localtime)
-    email           = models.EmailField(unique=True, db_index=True)
+    date_birth      = models.DateField(default=timezone.localtime)
     secret_key      = models.CharField(max_length=255, default=get_random_secret_key)
-
-    #name            = models.CharField(max_length=254)
-    #social_login_id = models.CharField(max_length=50, blank=True)
-    #social          = models.ForeignKey(SocialPlatform, on_delete=models.CASCADE, max_length=20, blank=True, default=1)
+    social          = models.ForeignKey(SocialPlatform, on_delete=models.CASCADE, max_length=20, default=1) # 처음 디비 생성할 때 무조건 social_platform에 1개이상 있어야함.
+    email           = models.EmailField(unique=True, db_index=True)
     
     USERNAME_FIELD  = 'email'
     REQUIRED_FIELDS = []

@@ -59,9 +59,10 @@ class GoogleLoginView(APIView):
                 user_json = response.json()
                 user_data = {
                         'email'         : user_json['email'],
+                        'social'        : 'google',
                         'first_name'    : user_json['name'],
                         'last_name'     : user_json['name'],
-                        #'date_birth'    : timezone.localtime(),
+                        'date_birth'    : timezone.localtime(),
                 }
 
                 user, _ = user_get_or_create(**user_data)
