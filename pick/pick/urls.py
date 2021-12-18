@@ -24,7 +24,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
     path('login/google/',GoogleLoginView.as_view()),
-    path('a/', A.as_view(), name="a"),
+
+    path('a/',A.as_view()),
+    path('a',A.as_view()),
 
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pari'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
