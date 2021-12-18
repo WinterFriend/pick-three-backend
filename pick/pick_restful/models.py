@@ -18,7 +18,7 @@ class SocialPlatform(models.Model):
 
 class User(AbstractUser):
     username        = None
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, verbose_name="uuid")
+    id              = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4, verbose_name="uuid") #
     date_birth      = models.DateField(default=timezone.localtime)
     secret_key      = models.CharField(max_length=255, default=get_random_secret_key)
     social          = models.ForeignKey(SocialPlatform, on_delete=models.CASCADE, max_length=20, default=1) # 무조건 social_platform에 1개이상 있어야함.
