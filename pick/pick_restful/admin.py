@@ -5,15 +5,31 @@ from django.utils.translation import gettext_lazy as _
 
 from pick_restful.models import User, SocialPlatform
 
-admin.site.register(SocialPlatform)
+@admin.register(SocialPlatform)
+class SocialAdmin(admin.ModelAdmin):
+    #actions = None
+    #list_display_links = None
+    
+    def has_add_permission(self, request, obj=None):
+        return False
+    def has_delete_permission(self, request, obj=None):
+        return False
+    def has_change_permission(self, request, obj=None):
+        return False
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
-    readonly_fields=('id',)
+    readonly_fields=('id', 'email', 'social')
 
+    def has_add_permission(self, request, obj=None):
+        return False
+    def has_delete_permission(self, request, obj=None):
+        return False
+    def has_change_permission(self, request, obj=None):
+        return False
+        
     fieldsets = (
-        (None, {'fields': ['id']}),
-        (None, {'fields': ('email', 'password', 'social')}),
+        (None, {'fields': ('id', 'email', 'password', 'social')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name')}),
         (_('Permissions'), {'fields': (
             'is_active',
