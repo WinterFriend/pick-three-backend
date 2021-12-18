@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views import View
 from django.shortcuts import redirect
-from .models import User#, SocialPlatform
 from django.utils import timezone
 from django.conf import settings
 
@@ -20,26 +19,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 
 def index(request):
-        print(request.method)
         return HttpResponse("연결성공")
-
-@api_view(['GET'])
-@permission_classes((IsAuthenticated, ))
-def a(request):
-        return JsonResponse({"message": "Hello, world!"})
-
-
-class A(APIView):
-        #permission_classes = [IsAuthenticated]
-        permission_classes = [AllowAny]
-        def get(self, request):
-                print(request.method)
-                return JsonResponse({"message": "Hello, world!"})
-
-        def post(self, request):
-                return JsonResponse({"message2": "Hello, world!"})
-
-
 
 def jwt_login(user: User):
         refresh = RefreshToken.for_user(user)
@@ -52,6 +32,15 @@ def jwt_login(user: User):
                 'access':       str(refresh.access_token),
         }
 
+class A(APIView):
+        permission_classes = [IsAuthenticated]
+
+        def get(self, request):
+                print(request.data)
+                return JsonResponse({"message": "Hello, world!"})
+
+        def post(self, request):
+                return JsonResponse({"message2": "Hello, world!"})
 
 
 class GoogleLoginView(APIView):
@@ -70,9 +59,10 @@ class GoogleLoginView(APIView):
                 user_json = response.json()
                 user_data = {
                         'email'         : user_json['email'],
+                        'social'        : 'google',
                         'first_name'    : user_json['name'],
                         'last_name'     : user_json['name'],
-                        #'date_birth'    : timezone.localtime(),
+                        'date_birth'    : timezone.localtime(),
                 }
 
                 user, _ = user_get_or_create(**user_data)
