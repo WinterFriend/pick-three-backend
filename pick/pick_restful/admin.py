@@ -9,7 +9,10 @@ admin.site.register(SocialPlatform)
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
+    readonly_fields=('id',)
+
     fieldsets = (
+        (None, {'fields': ['id']}),
         (None, {'fields': ('email', 'password', 'social')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name')}),
         (_('Permissions'), {'fields': (
