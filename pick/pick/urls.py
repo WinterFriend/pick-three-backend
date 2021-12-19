@@ -15,16 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from pick_restful import views
-from pick_restful.views import GoogleLoginView, A
+from pick_restful import apis
+from pick_restful.apis import GoogleLoginView, A
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index),
+    path('', apis.index),
     path('login/google/',GoogleLoginView.as_view()),
-    path('a/', A.as_view(), name="a"),
+
+    path('a/',A.as_view()),
+    path('a',A.as_view()),
 
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pari'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
