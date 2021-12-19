@@ -20,9 +20,9 @@ class User(AbstractUser):
     username        = None
     id              = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True)
     date_birth      = models.DateField(default=timezone.localtime)
-    sub             = models.CharField(max_length=64, unique=True, null=False, blank=False)
+    sub             = models.CharField(max_length=64, null=False, blank=False) # 현재 sub는 unique=True 아님
     social          = models.ForeignKey(SocialPlatform, on_delete=models.CASCADE, max_length=20, default=1) # 무조건 social_platform에 1개이상 있어야함.
-    
+
     USERNAME_FIELD  = 'id'
     REQUIRED_FIELDS = []
 
