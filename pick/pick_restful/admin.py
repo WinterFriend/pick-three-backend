@@ -29,8 +29,8 @@ class UserAdmin(DjangoUserAdmin):
         return False
     
     fieldsets = (
-        (None, {'fields': ('first_name', 'id', 'sub', 'email', 'social', 'password', )}),
-        (_('Personal info'), {'fields': ('first_name',)}),
+        (None, {'fields': ('first_name', 'email', 'social', 'password', )}),
+        (_('Personal info'), {'fields': ('id', 'sub')}),
         (_('Permissions'), {'fields': (
             'is_active',
             'is_staff',
