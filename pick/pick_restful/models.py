@@ -22,13 +22,12 @@ class User(AbstractUser):
     date_birth      = models.DateField(default=timezone.localtime)
     sub             = models.CharField(max_length=64, unique=True, null=False, blank=False)
     social          = models.ForeignKey(SocialPlatform, on_delete=models.CASCADE, max_length=20, default=1) # 무조건 social_platform에 1개이상 있어야함.
-
-    #secret_key      = models.CharField(max_length=255, default=get_random_secret_key)
+    
     USERNAME_FIELD  = 'id'
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return self.first_name
+        return str(self.id)
     class Meta:
         swappable = 'AUTH_USER_MODEL'
 
