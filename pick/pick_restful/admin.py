@@ -27,9 +27,9 @@ class UserAdmin(DjangoUserAdmin):
         return False
     def has_change_permission(self, request, obj=None):
         return False
-        
+    
     fieldsets = (
-        (None, {'fields': ('id', 'email', 'password', 'social')}),
+        (None, {'fields': ('first_name', 'id', 'sub', 'email', 'social', 'password', )}),
         (_('Personal info'), {'fields': ('first_name',)}),
         (_('Permissions'), {'fields': (
             'is_active',
@@ -45,6 +45,6 @@ class UserAdmin(DjangoUserAdmin):
             'fields': ('email', 'password1', 'password2'),
         }),
     )
-    ordering = ('email', )
-    list_display = ('email', 'first_name', 'is_staff', 'social')
-    search_fields = ('email', 'first_name')
+    ordering = ('id', )
+    list_display = ('first_name', 'id', 'social', 'is_staff')
+    search_fields = ('first_name', 'id')
