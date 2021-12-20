@@ -63,3 +63,14 @@ def user_get_or_create(*, sub: str, social: str, **extra_data) -> Tuple[User, bo
         return user, False
 
     return user_create(sub=sub, social=social, **extra_data), True
+
+def jwt_login(user: User):
+        refresh = RefreshToken.for_user(user)
+
+        print(  'refresh_token : ',     str(refresh))
+        print(  'access_token : ',      str(refresh.access_token))
+
+        return {
+                'refresh':      str(refresh),
+                'access':       str(refresh.access_token),
+        }

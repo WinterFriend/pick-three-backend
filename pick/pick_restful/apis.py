@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 import requests, json
 
 from pick_restful.models import User
-from pick_restful.services import user_record_login, user_get_or_create
+from pick_restful.services import user_record_login, user_get_or_create, jwt_login
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -23,17 +23,6 @@ JWT_authenticator = JWTAuthentication()
 
 def index(request):
         return HttpResponse("연결성공")
-
-def jwt_login(user: User):
-        refresh = RefreshToken.for_user(user)
-
-        print(  'refresh_token : ',     str(refresh))
-        print(  'access_token : ',      str(refresh.access_token))
-
-        return {
-                'refresh':      str(refresh),
-                'access':       str(refresh.access_token),
-        }
 
 class A(APIView):
         permission_classes = [IsAuthenticated]
