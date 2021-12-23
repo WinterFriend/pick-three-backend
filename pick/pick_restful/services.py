@@ -7,6 +7,7 @@ from utils import get_now
 
 from pick_restful.models import User, SocialPlatform
 from django.utils import timezone
+from rest_framework_simplejwt.tokens import RefreshToken
 
 def user_create_superuser(id, password=None, **extra_fields) -> User:
     extra_fields = {
