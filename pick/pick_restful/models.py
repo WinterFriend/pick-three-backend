@@ -37,4 +37,16 @@ class User(AbstractUser):
             return self.first_name.capitalize()
 
         return f'{self.first_name.capitalize()} {self.last_name.capitalize()}'
-        
+
+class Goal(models.Model):
+    name            = models.CharField(max_length=20, null=False, blank=False)
+    description     = models.CharField(max_length=128, null=False, blank=False)
+    icon            = models.CharField(max_length=128, null=False, blank=False)
+
+    def __str__(self):
+        return self.name
+    class Meta:
+        db_table = "goal"
+
+class UserGoal(models.Model):
+    pass
