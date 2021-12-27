@@ -37,4 +37,26 @@ class User(AbstractUser):
             return self.first_name.capitalize()
 
         return f'{self.first_name.capitalize()} {self.last_name.capitalize()}'
-        
+
+class Goal(models.Model):
+    name            = models.CharField(max_length=20, null=False, blank=False)
+    description     = models.CharField(max_length=128, null=False, blank=False)
+    icon            = models.CharField(max_length=128, null=False, blank=False)
+
+    def __str__(self):
+        return self.name
+    class Meta:
+        db_table = "goal"
+
+class UserGoal(models.Model):
+    goal_id         = models.ForeignKey(Goal, on_delete=models.CASCADE, max_length=20) # 무조건 goal에 1개이상 있어야함.
+    select_date     = models.DateField(default=timezone.localtime)
+    success         = models.BooleanField(default=0)
+    input_date      = models.DateTimeField(default=datetime.now)
+    diary           = models.TextField(max_length=1024)
+    user_id         = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user_id.first_name
+    class Meta:
+        db_table = "user_goal"
