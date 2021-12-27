@@ -49,4 +49,14 @@ class Goal(models.Model):
         db_table = "goal"
 
 class UserGoal(models.Model):
-    pass
+    goal_id         = models.ForeignKey(Goal, on_delete=models.CASCADE, max_length=20) # 무조건 goal에 1개이상 있어야함.
+    select_date     = models.DateField(default=timezone.localtime)
+    success         = models.BooleanField(default=0)
+    input_date      = models.DateTimeField(default=datetime.now)
+    diary           = models.TextField(max_length=1024)
+    user_id         = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user_id.first_name
+    class Meta:
+        db_table = "user_goal"

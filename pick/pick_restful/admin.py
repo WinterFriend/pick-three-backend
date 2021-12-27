@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
 from django.utils.translation import gettext_lazy as _
 
-from pick_restful.models import User, SocialPlatform, Goal
+from pick_restful.models import User, SocialPlatform, Goal, UserGoal
 
 @admin.register(SocialPlatform)
 class SocialAdmin(admin.ModelAdmin):
@@ -59,5 +59,19 @@ class GoalAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
     '''
+    def has_change_permission(self, request, obj=None):
+        return False'''
+
+@admin.register(UserGoal)
+class UserGoalAdmin(admin.ModelAdmin):
+    #actions = None
+    #list_display_links = None
+    
+    list_display = ('user_id', 'goal_id', 'select_date', 'input_date', 'diary')
+    '''
+    def has_add_permission(self, request, obj=None):
+        return False
+    def has_delete_permission(self, request, obj=None):
+        return False
     def has_change_permission(self, request, obj=None):
         return False'''
