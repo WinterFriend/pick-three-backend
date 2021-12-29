@@ -53,7 +53,7 @@ class UserGoal(models.Model):
     select_date     = models.DateField(default=timezone.localtime)
     success         = models.BooleanField(default=0)
     input_date      = models.DateTimeField(default=datetime.now)
-    diary           = models.TextField(max_length=1024)
+    diary           = models.TextField(max_length=200)
     user_id         = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
