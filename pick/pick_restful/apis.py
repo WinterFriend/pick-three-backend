@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 import requests, json
 
-from pick_restful.models import User
+from pick_restful.models import User, Goal
 from pick_restful.services import user_record_login, user_get_or_create, jwt_login
 
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -19,8 +19,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
-JWT_authenticator = JWTAuthentication()
 
+JWT_authenticator = JWTAuthentication()
 def index(request):
         return HttpResponse("연결성공")
 
@@ -67,3 +67,13 @@ class GoogleLoginView(APIView):
 
                 token = jwt_login(user=user)
                 return JsonResponse(token)
+
+from django.core.serializers.json import DjangoJSONEncoder
+
+class InfoGoalList(APIView):
+        permission_classes = [AllowAny]
+
+        def get(self, request):
+                queryset = Goal.objects.all().values('name', 'description', 'icon')
+                queryset = list(queryset)
+                return JsonResponse(queryset, safe=False)
