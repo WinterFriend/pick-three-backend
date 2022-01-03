@@ -46,7 +46,7 @@ SECRET_KEY = get_secret("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '3.36.239.188', 'ec2-15-165-167-125.ap-northeast-2.compute.amazonaws.com', 'api.winty.io', '10.0.0.73', '52.78.120.64', '15.165.150.41']
+ALLOWED_HOSTS = ['127.0.0.1', '3.36.239.188', 'ec2-15-165-167-125.ap-northeast-2.compute.amazonaws.com', 'api.winty.io', '10.0.0.73', '52.78.120.64', '15.165.150.41', 'api.pickple.winty.io']
 
 BASE_FRONTEND_URL = 'https://winty.io/login.html'
 
