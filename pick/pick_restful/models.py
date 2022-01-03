@@ -29,6 +29,7 @@ class User(AbstractUser):
     def __str__(self):
         return str(self.id)
     class Meta:
+        db_table = "user"
         swappable = 'AUTH_USER_MODEL'
 
     @property
@@ -42,6 +43,8 @@ class Goal(models.Model):
     name            = models.CharField(max_length=20, null=False, blank=False)
     description     = models.CharField(max_length=128, null=False, blank=False)
     icon            = models.CharField(max_length=128, null=False, blank=False)
+    main_color      = models.CharField(max_length=9, null=False, blank=False, default="")
+    sub_color       = models.CharField(max_length=9, null=False, blank=False, default="")
 
     def __str__(self):
         return self.name
@@ -49,14 +52,14 @@ class Goal(models.Model):
         db_table = "goal"
 
 class UserGoal(models.Model):
-    goal_id         = models.ForeignKey(Goal, on_delete=models.CASCADE, max_length=20) # 무조건 goal에 1개이상 있어야함.
+    goal            = models.ForeignKey(Goal, on_delete=models.CASCADE, max_length=20) # 무조건 goal에 1개이상 있어야함.
     select_date     = models.DateField(default=timezone.localtime)
     success         = models.BooleanField(default=0)
     input_date      = models.DateTimeField(default=datetime.now)
     diary           = models.TextField(max_length=200)
-    user_id         = models.ForeignKey(User, on_delete=models.CASCADE)
+    user            = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.user_id.first_name
+        return self.user.first_name
     class Meta:
         db_table = "user_goal"
