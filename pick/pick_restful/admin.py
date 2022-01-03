@@ -67,7 +67,7 @@ class UserGoalAdmin(admin.ModelAdmin):
     #actions = None
     #list_display_links = None
     
-    list_display = ('user_id', 'goal_id', 'select_date', 'input_date', 'diary')
+    list_display = ('user', 'goal', 'select_date', 'input_date', 'diary')
     '''
     def has_add_permission(self, request, obj=None):
         return False
