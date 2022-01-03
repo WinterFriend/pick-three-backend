@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 import requests, json
 
-from pick_restful.models import User, Goal
+from pick_restful.models import User, Goal, UserGoal
 from pick_restful.services import user_record_login, user_get_or_create, jwt_login
 
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -19,6 +19,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
+
+from django.db.models import Q
+import datetime
+
+from pick_restful.selectors import user_goal_info
 
 JWT_authenticator = JWTAuthentication()
 def index(request):
@@ -30,7 +35,7 @@ class A(APIView):
         def get(self, request):
                 response = JWT_authenticator.authenticate(request)
                 user , token = response
-                print(token.payload)
+                print(token['user_id'])
                 return JsonResponse({"message": "Hello, world!"})
 
         def post(self, request):
@@ -66,14 +71,44 @@ class GoogleLoginView(APIView):
                 user, _ = user_get_or_create(**user_data)
 
                 token = jwt_login(user=user)
+                print(token)
                 return JsonResponse(token)
 
 from django.core.serializers.json import DjangoJSONEncoder
 
+#############################################나중에 permission_classes = [IsAuthenticated] 로 바꿔야함
 class InfoGoalList(APIView):
-        permission_classes = [AllowAny]
+        permission_classes = [IsAuthenticated]
 
         def get(self, request):
-                queryset = Goal.objects.all().values('name', 'description', 'icon')
-                queryset = list(queryset)
-                return JsonResponse(queryset, safe=False)
+                queryset = Goal.objects.all().values('id', 'name', 'description', 'icon')
+                return JsonResponse(list(queryset), safe=False)
+
+class UserGoalDetail(APIView):
+        permission_classes = [IsAuthenticated]
+
+        def get(self, request):
+                response = JWT_authenticator.authenticate(request)
+                user , token = response
+
+                user = token['user_id']
+                user = 'a95a73c3-d1cc-47c3-a557-d3517cd10b49'
+                dateCount = request.data['dateCount']
+                needColumn = request.data['needColumn']
+                startDate = request.data['startDate']
+                endDate = datetime.datetime.strptime(startDate, '%Y-%m-%d').date() + datetime.timedelta(days=dateCount-1)
+                
+                queryset = UserGoal.objects.filter(user=user, select_date__range=[startDate, endDate], active=1).order_by('select_date').values('select_date', 'goal', 'success', 'diary')
+
+                return JsonResponse(user_goal_info(queryset, startDate, dateCount, needColumn), safe=False)
+
+
+'''
+user = 'a95a73c3-d1cc-47c3-a557-d3517cd10b49'
+startDate = '2021-12-19'
+dateCount = 10
+needColumn = ['success', 'diary']
+endDate = datetime.datetime.strptime(startDate, '%Y-%m-%d').date() + datetime.timedelta(days=dateCount)
+queryset = UserGoal.objects.filter(user=user, select_date__range=[startDate, endDate], active=1).values('select_date', 'goal', 'success', 'diary')
+queryset
+'''
