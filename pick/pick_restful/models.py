@@ -40,9 +40,10 @@ class User(AbstractUser):
         return f'{self.first_name.capitalize()} {self.last_name.capitalize()}'
 
 class Goal(models.Model):
-    name            = models.CharField(max_length=20, null=False, blank=False)
-    description     = models.CharField(max_length=128, null=False, blank=False)
-    icon            = models.CharField(max_length=128, null=False, blank=False)
+    name            = models.CharField(max_length=20, null=False, blank=False, default="")
+    description     = models.CharField(max_length=128, null=False, blank=False, default="")
+    active_icon     = models.CharField(max_length=128, null=False, blank=False, default="")
+    inactive_icon   = models.CharField(max_length=128, null=False, blank=False, default="")
     main_color      = models.CharField(max_length=9, null=False, blank=False, default="")
     sub_color       = models.CharField(max_length=9, null=False, blank=False, default="")
 
