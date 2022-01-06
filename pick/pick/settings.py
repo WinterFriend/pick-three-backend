@@ -201,7 +201,7 @@ AUTH_USER_MODEL = 'pick_restful.User'
 PRODUCTION_SETTINGS = False
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME'     : datetime.timedelta(hours=2),
+    'ACCESS_TOKEN_LIFETIME'     : datetime.timedelta(days=14),
     'REFRESH_TOKEN_LIFETIME'    : datetime.timedelta(days=14),
     'ROTATE_REFRESH_TOKENS'     : True,
     'BLACKLIST_AFTER_ROTATION'  : True,
