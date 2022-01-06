@@ -5,7 +5,7 @@ from django.core.management.utils import get_random_secret_key
 
 from utils import get_now
 
-from pick_restful.models import User, SocialPlatform
+from pick_restful.models import User, SocialPlatform, UserGoal, Goal
 from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -66,12 +66,20 @@ def user_get_or_create(*, sub: str, social: str, **extra_data) -> Tuple[User, bo
     return user_create(sub=sub, social=social, **extra_data), True
 
 def jwt_login(user: User):
-        refresh = RefreshToken.for_user(user)
+    refresh = RefreshToken.for_user(user)
 
-        print(  'refresh_token : ',     str(refresh))
-        print(  'access_token : ',      str(refresh.access_token))
+    print(  'refresh_token : ',     str(refresh))
+    print(  'access_token : ',      str(refresh.access_token))
 
-        return {
-                'refresh':      str(refresh),
-                'access':       str(refresh.access_token),
-        }
+    return {
+        'refresh':      str(refresh),
+        'access':       str(refresh.access_token),
+    }
+
+@transaction.atomic
+def user_goal_detail_set(date: str, user_id: str, userGoalList: list):
+    user_goal = UserGoal.objects.filter(select_date=date, user_id=user_id)
+    user_goal.update(active=0)
+    for obj in userGoalList:
+        UserGoal.objects.update_or_create(select_date=date, user=User.objects.get(id=user_id), goal=Goal.objects.get(id=int(obj['goalId'])), 
+            defaults={'active':1, 'diary':obj['diary'], 'success':obj['success']})

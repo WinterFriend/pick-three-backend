@@ -8,20 +8,15 @@ from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-
-import requests, json
-
-from pick_restful.models import User, Goal, UserGoal
-from pick_restful.services import user_record_login, user_get_or_create, jwt_login
-
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from pick_restful.models import User, Goal, UserGoal
+from pick_restful.services import user_record_login, user_get_or_create, jwt_login, user_goal_detail_set
 
 from django.db.models import Q
-import datetime
+import requests, json, datetime
 
 from pick_restful.selectors import user_goal_info
 
@@ -74,9 +69,6 @@ class GoogleLoginView(APIView):
                 print(token)
                 return JsonResponse(token)
 
-from django.core.serializers.json import DjangoJSONEncoder
-
-#############################################나중에 permission_classes = [IsAuthenticated] 로 바꿔야함
 class InfoGoalList(APIView):
         permission_classes = [IsAuthenticated]
 
@@ -84,15 +76,15 @@ class InfoGoalList(APIView):
                 queryset = Goal.objects.all().values('id', 'name', 'description', 'icon')
                 return JsonResponse(list(queryset), safe=False)
 
-class UserGoalDetail(APIView):
+class UserGoalDetailGet(APIView):
         permission_classes = [IsAuthenticated]
 
-        def get(self, request):
+        def post(self, request):
                 response = JWT_authenticator.authenticate(request)
                 user , token = response
 
                 user = token['user_id']
-                user = 'a95a73c3-d1cc-47c3-a557-d3517cd10b49'
+                # user = 'a95a73c3-d1cc-47c3-a557-d3517cd10b49'
                 dateCount = request.data['dateCount']
                 needColumn = request.data['needColumn']
                 startDate = request.data['startDate']
@@ -102,6 +94,20 @@ class UserGoalDetail(APIView):
 
                 return JsonResponse(user_goal_info(queryset, startDate, dateCount, needColumn), safe=False)
 
+class UserGoalDetailSet(APIView):
+        permission_classes = [IsAuthenticated]
+
+        def post(self, request):
+                response = JWT_authenticator.authenticate(request)
+                user , token = response
+
+                user = token['user_id']
+                # user = 'a95a73c3-d1cc-47c3-a557-d3517cd10b49'
+                date = request.data['date']
+                userGoalList = request.data['userGoalList']
+                user_goal_detail_set(date, user, userGoalList)
+
+                return JsonResponse({"success" : "success"}, safe=False)
 
 '''
 user = 'a95a73c3-d1cc-47c3-a557-d3517cd10b49'
