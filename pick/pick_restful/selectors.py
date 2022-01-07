@@ -1,4 +1,5 @@
 from pick_restful.models import User
+from django.db.models.query import QuerySet
 import datetime
 
 def user_get_me(*, user: User) -> dict:
@@ -14,7 +15,12 @@ def jwt_response_payload_handler(token, user=None, request=None) -> dict:
         'me': user_get_me(user=user),
     }
 
-def user_goal_info(queryset, startDate, dateCount, needColumn) -> dict:
+def user_goal_info(
+    queryset: QuerySet, 
+    startDate: str, 
+    dateCount: str, 
+    needColumn: list
+) -> dict:
     if queryset == None:
         return None
 
