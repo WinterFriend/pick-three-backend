@@ -2,9 +2,7 @@ from typing import Tuple
 
 from django.db import transaction
 from django.core.management.utils import get_random_secret_key
-
 from utils import get_now
-
 from pick_restful.models import User, SocialPlatform, UserGoal, Goal
 from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -77,9 +75,12 @@ def jwt_login(user: User):
     }
 
 @transaction.atomic
-def user_goal_detail_set(date: str, user_id: str, userGoalList: list):
+def user_goal_detail_set(date: str, user_id: str, userGoalList: list, updateColumn: list):
     user_goal = UserGoal.objects.filter(select_date=date, user_id=user_id)
     user_goal.update(active=0)
     for obj in userGoalList:
+        defaults = {column : obj[column] for column in updateColumn}
+        defaults['active'] = 1
+        print(defaults)
         UserGoal.objects.update_or_create(select_date=date, user=User.objects.get(id=user_id), goal=Goal.objects.get(id=int(obj['goalId'])), 
-            defaults={'active':1, 'diary':obj['diary'], 'success':obj['success']})
+            defaults=defaults)
