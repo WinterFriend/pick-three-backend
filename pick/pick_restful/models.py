@@ -25,13 +25,13 @@ class User(AbstractUser):
     date_birth      = models.DateField(default=timezone.localtime, verbose_name="생일")
     sub             = models.CharField(max_length=64, db_index=True, null=False, blank=False, verbose_name="SUB") # 현재 sub는 unique=True 아님
     social          = models.ForeignKey(SocialPlatform, on_delete=models.CASCADE, max_length=20, default=1, verbose_name="가입 경로") # 무조건 social_platform에 1개이상 있어야함.
-    full_name       = models.CharField(max_length=64, null=False, blank=False, default='', verbose_name="이름") # 현재 sub는 unique=True 아님
+    full_name       = models.CharField(max_length=64, null=False, blank=False, default='', verbose_name="이름")
 
     USERNAME_FIELD  = 'id'
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return str(self.full_name) + '\t' + str(self.id)
+        return str(self.full_name)
 
     class Meta:
         db_table = "user"
@@ -68,16 +68,16 @@ class UserGoal(models.Model):
     goal            = models.ForeignKey(Goal, on_delete=models.CASCADE, max_length=20, verbose_name="목표") # 무조건 goal에 1개이상 있어야함.
     select_date     = models.DateField(default=timezone.localtime, verbose_name="선택 날짜")
     input_date      = models.DateTimeField(default=datetime.now, verbose_name="수정 시간")
-    diary           = models.TextField(max_length=200, verbose_name="일기")
+    diary           = models.TextField(max_length=200, verbose_name="일기", default='')
     user            = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="사용자")
     success         = models.BooleanField(default=0, verbose_name="성공")
     active          = models.BooleanField(default=0, verbose_name="활성화")
 
     def __str__(self):
         return self.user.first_name
-
+    
     class Meta:
         db_table = "user_goal"
         verbose_name = '사용자 목표'
         verbose_name_plural = '사용자 목표'
-        ordering = ['-select_date', ]
+        ordering = ['-select_date', 'goal']
