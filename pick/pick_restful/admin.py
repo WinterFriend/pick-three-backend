@@ -74,6 +74,10 @@ class UserGoalAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
     
+    def get_uuid(self, obj):
+        return obj.user.id
+    get_uuid.short_description = 'UUID'
+
     fieldsets = (
         (None, {'fields': ('user', 'goal', 'select_date', 'input_date')}),
         (None, {'fields': (
@@ -82,5 +86,5 @@ class UserGoalAdmin(admin.ModelAdmin):
         )}),
     )
     list_filter = ('goal', 'select_date', 'success', 'active')
-    list_display = ('user', 'goal', 'select_date', 'input_date', 'success', 'active')
+    list_display = ('user', 'get_uuid', 'goal', 'diary', 'select_date', 'input_date', 'success', 'active')
     search_fields = ('select_date', 'user__full_name', 'user__id')
