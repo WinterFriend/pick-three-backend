@@ -16,6 +16,7 @@ from pick_restful.models import User, Goal, UserGoal
 from pick_restful.services import user_record_login, user_get_or_create, jwt_login, user_goal_detail_set
 
 from django.db.models import Q
+from django.db.models import F
 import requests, json, datetime
 
 from pick_restful.selectors import user_goal_info
@@ -57,12 +58,12 @@ class GoogleLoginView(APIView):
                         'sub'           : user_json['sub'],
                         'social'        : 'google',
                         'email'         : user_json['email'],
-                        'first_name'    : user_json['name'],
-                        'last_name'     : user_json['name'],
+                        'first_name'    : user_json['given_name'],
+                        'last_name'     : user_json['family_name'],
+                        'full_name'     : user_json['name'],
                         'date_birth'    : timezone.localtime(),
                         'last_login'    : timezone.localtime(),
                 }
-
                 user, _ = user_get_or_create(**user_data)
 
                 token = jwt_login(user=user)
@@ -73,7 +74,13 @@ class InfoGoalList(APIView):
         permission_classes = [IsAuthenticated]
 
         def get(self, request):
-                queryset = Goal.objects.all().values('id', 'name', 'description', 'icon')
+                queryset = Goal.objects.all().extra(
+                        select={'activeIcon'    : 'active_icon',
+                                'inactiveIcon'  : 'inactive_icon',
+                                'mainColor'     : 'main_color',
+                                'subColor'      : 'sub_color',
+                        }).values('id', 'name', 'description', 'activeIcon',
+                                'inactiveIcon', 'mainColor', 'subColor')
                 return JsonResponse(list(queryset), safe=False)
 
 class UserGoalDetailGet(APIView):
@@ -82,15 +89,13 @@ class UserGoalDetailGet(APIView):
         def post(self, request):
                 response = JWT_authenticator.authenticate(request)
                 user , token = response
-
                 user = token['user_id']
-                # user = 'a95a73c3-d1cc-47c3-a557-d3517cd10b49'
                 dateCount = request.data['dateCount']
                 needColumn = request.data['needColumn']
                 startDate = request.data['startDate']
                 endDate = datetime.datetime.strptime(startDate, '%Y-%m-%d').date() + datetime.timedelta(days=dateCount-1)
                 
-                queryset = UserGoal.objects.filter(user=user, select_date__range=[startDate, endDate], active=1).order_by('select_date').values('select_date', 'goal', 'success', 'diary')
+                queryset = UserGoal.objects.filter(user=user, select_date__range=[startDate, endDate], active=1).values('select_date', 'goal', 'success', 'diary')
 
                 return JsonResponse(user_goal_info(queryset, startDate, dateCount, needColumn), safe=False)
 
@@ -102,19 +107,9 @@ class UserGoalDetailSet(APIView):
                 user , token = response
 
                 user = token['user_id']
-                # user = 'a95a73c3-d1cc-47c3-a557-d3517cd10b49'
                 date = request.data['date']
+                updateColumn = request.data['updateColumn']
                 userGoalList = request.data['userGoalList']
-                user_goal_detail_set(date, user, userGoalList)
+                user_goal_detail_set(date, user, userGoalList, updateColumn)
 
                 return JsonResponse({"success" : "success"}, safe=False)
-
-'''
-user = 'a95a73c3-d1cc-47c3-a557-d3517cd10b49'
-startDate = '2021-12-19'
-dateCount = 10
-needColumn = ['success', 'diary']
-endDate = datetime.datetime.strptime(startDate, '%Y-%m-%d').date() + datetime.timedelta(days=dateCount)
-queryset = UserGoal.objects.filter(user=user, select_date__range=[startDate, endDate], active=1).values('select_date', 'goal', 'success', 'diary')
-queryset
-'''
