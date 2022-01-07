@@ -39,8 +39,7 @@ class UserAdmin(DjangoUserAdmin):
     ] 
 
     fieldsets = (
-        (None, {'fields': ('full_name', 'email', 'social', 'password', )}),
-        (_('Personal info'), {'fields': ('id', 'sub')}),
+        (_('Personal info'), {'fields': ('full_name', 'email', 'social', 'id', 'sub', 'password', )}),
         (_('Permissions'), {'fields': (
             'is_active',
             'is_staff',
@@ -48,12 +47,6 @@ class UserAdmin(DjangoUserAdmin):
             # 'groups',
         )}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'date_birth')}),
-    )
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2'),
-        }),
     )
     ordering = ('id', )
     list_display = ('full_name', 'id', 'social', 'sub', 'email')
@@ -76,7 +69,6 @@ class GoalAdmin(admin.ModelAdmin):
 class UserGoalAdmin(admin.ModelAdmin):
     #actions = None
     #list_display_links = None
-    list_display = ('user', 'goal', 'select_date', 'input_date', 'diary', 'success', 'active')
     '''
     def has_add_permission(self, request, obj=None):
         return False
@@ -84,3 +76,13 @@ class UserGoalAdmin(admin.ModelAdmin):
         return False
     def has_change_permission(self, request, obj=None):
         return False'''
+    
+    fieldsets = (
+        (None, {'fields': ('user', 'goal', 'select_date', 'input_date', 'diary')}),
+        (None, {'fields': (
+            'success',
+            'active',
+        )}),
+    )
+    list_display = ('user', 'goal', 'select_date', 'input_date', 'diary', 'success', 'active')
+    search_fields = ('select_date', 'diary')
