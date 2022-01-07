@@ -39,12 +39,14 @@ class User(AbstractUser):
         verbose_name = '사용자'
         verbose_name_plural = '사용자'
 
+    '''
     @property
     def name(self):
         if not self.last_name:
             return self.first_name.capitalize()
 
         return f'{self.first_name.capitalize()} {self.last_name.capitalize()}'
+    '''
 
 class Goal(models.Model):
     name            = models.CharField(max_length=20, null=False, blank=False, default="", verbose_name="이름")
