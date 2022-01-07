@@ -4,6 +4,9 @@ from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.utils.translation import gettext_lazy as _
 
 from pick_restful.models import User, SocialPlatform, Goal, UserGoal
+from django.contrib.auth.models import Group
+
+admin.site.unregister(Group)
 
 @admin.register(SocialPlatform)
 class SocialAdmin(admin.ModelAdmin):
@@ -17,6 +20,9 @@ class SocialAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
+class UserGoalInline(admin.TabularInline):
+    model = UserGoal
+
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
     readonly_fields=('id', 'email', 'social')
@@ -27,15 +33,19 @@ class UserAdmin(DjangoUserAdmin):
         return False
     def has_change_permission(self, request, obj=None):
         return False
-    
+
+    inlines = [
+        UserGoalInline,
+    ] 
+
     fieldsets = (
-        (None, {'fields': ('first_name', 'email', 'social', 'password', )}),
+        (None, {'fields': ('full_name', 'email', 'social', 'password', )}),
         (_('Personal info'), {'fields': ('id', 'sub')}),
         (_('Permissions'), {'fields': (
             'is_active',
             'is_staff',
             'is_superuser',
-            'groups',
+            # 'groups',
         )}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'date_birth')}),
     )
@@ -46,8 +56,8 @@ class UserAdmin(DjangoUserAdmin):
         }),
     )
     ordering = ('id', )
-    list_display = ('first_name', 'id', 'social', 'sub', 'email')
-    search_fields = ('first_name', 'id')
+    list_display = ('full_name', 'id', 'social', 'sub', 'email')
+    search_fields = ('full_name', 'id')
 
 @admin.register(Goal)
 class GoalAdmin(admin.ModelAdmin):
@@ -66,7 +76,6 @@ class GoalAdmin(admin.ModelAdmin):
 class UserGoalAdmin(admin.ModelAdmin):
     #actions = None
     #list_display_links = None
-    
     list_display = ('user', 'goal', 'select_date', 'input_date', 'diary', 'success', 'active')
     '''
     def has_add_permission(self, request, obj=None):

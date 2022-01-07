@@ -57,12 +57,12 @@ class GoogleLoginView(APIView):
                         'sub'           : user_json['sub'],
                         'social'        : 'google',
                         'email'         : user_json['email'],
-                        'first_name'    : user_json['name'],
-                        'last_name'     : user_json['name'],
+                        'first_name'    : user_json['given_name'],
+                        'last_name'     : user_json['famil_name'],
+                        'full_name'     : user_json['name'],
                         'date_birth'    : timezone.localtime(),
                         'last_login'    : timezone.localtime(),
                 }
-
                 user, _ = user_get_or_create(**user_data)
 
                 token = jwt_login(user=user)
@@ -105,6 +105,7 @@ class UserGoalDetailSet(APIView):
                 # user = 'a95a73c3-d1cc-47c3-a557-d3517cd10b49'
                 date = request.data['date']
                 userGoalList = request.data['userGoalList']
+                print(type(request.data))
                 user_goal_detail_set(date, user, userGoalList)
 
                 return JsonResponse({"success" : "success"}, safe=False)
