@@ -9,7 +9,7 @@ def user_get_me(*, user: User) -> dict:
         'email': user.email
     }
 
-def jwt_response_payload_handler(token, user=None, request=None) -> dict:
+def jwt_response_payload_handler(token: str, user=None, request=None) -> dict:
     return {
         'token': token,
         'me': user_get_me(user=user),
@@ -17,7 +17,7 @@ def jwt_response_payload_handler(token, user=None, request=None) -> dict:
 
 def user_goal_info(
     queryset: QuerySet, 
-    startDate: str, 
+    startDate: str,
     dateCount: str, 
     needColumn: list
 ) -> dict:
