@@ -12,8 +12,11 @@ class SocialPlatform(models.Model):
     
     def __str__(self):
         return self.platform
+
     class Meta:
         db_table = "social_platform"
+        verbose_name = '가입 경로'
+        verbose_name_plural = '가입 경로'
 
 
 class User(AbstractUser):
@@ -22,15 +25,19 @@ class User(AbstractUser):
     date_birth      = models.DateField(default=timezone.localtime)
     sub             = models.CharField(max_length=64, db_index=True, null=False, blank=False) # 현재 sub는 unique=True 아님
     social          = models.ForeignKey(SocialPlatform, on_delete=models.CASCADE, max_length=20, default=1) # 무조건 social_platform에 1개이상 있어야함.
+    full_name       = models.CharField(max_length=64, null=False, blank=False, default='') # 현재 sub는 unique=True 아님
 
     USERNAME_FIELD  = 'id'
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return str(self.id)
+        return str(self.full_name) + '\t' + str(self.id)
+
     class Meta:
         db_table = "user"
         swappable = 'AUTH_USER_MODEL'
+        verbose_name = '사용자'
+        verbose_name_plural = '사용자'
 
     @property
     def name(self):
@@ -49,8 +56,11 @@ class Goal(models.Model):
 
     def __str__(self):
         return self.name
+
     class Meta:
         db_table = "goal"
+        verbose_name = '목표 분류'
+        verbose_name_plural = '목표 분류'
 
 class UserGoal(models.Model):
     goal            = models.ForeignKey(Goal, on_delete=models.CASCADE, max_length=20) # 무조건 goal에 1개이상 있어야함.
@@ -63,5 +73,8 @@ class UserGoal(models.Model):
 
     def __str__(self):
         return self.user.first_name
+
     class Meta:
         db_table = "user_goal"
+        verbose_name = '사용자 목표'
+        verbose_name_plural = '사용자 목표'
