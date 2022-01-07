@@ -90,7 +90,7 @@ class UserGoalDetailGet(APIView):
                 startDate = request.data['startDate']
                 endDate = datetime.datetime.strptime(startDate, '%Y-%m-%d').date() + datetime.timedelta(days=dateCount-1)
                 
-                queryset = UserGoal.objects.filter(user=user, select_date__range=[startDate, endDate], active=1).order_by('select_date').values('select_date', 'goal', 'success', 'diary')
+                queryset = UserGoal.objects.filter(user=user, select_date__range=[startDate, endDate], active=1).values('select_date', 'goal', 'success', 'diary')
 
                 return JsonResponse(user_goal_info(queryset, startDate, dateCount, needColumn), safe=False)
 
