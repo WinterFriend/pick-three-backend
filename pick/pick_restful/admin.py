@@ -10,9 +10,7 @@ admin.site.unregister(Group)
 
 @admin.register(SocialPlatform)
 class SocialAdmin(admin.ModelAdmin):
-    #actions = None
-    #list_display_links = None
-    
+    actions = None
     def has_add_permission(self, request, obj=None):
         return False
     def has_delete_permission(self, request, obj=None):
@@ -22,11 +20,11 @@ class SocialAdmin(admin.ModelAdmin):
 
 class UserGoalInline(admin.TabularInline):
     model = UserGoal
+    fields = ('goal', 'select_date', 'input_date', 'success', 'active')
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
-    readonly_fields=('id', 'email', 'social')
-
+    actions = None
     def has_add_permission(self, request, obj=None):
         return False
     def has_delete_permission(self, request, obj=None):
@@ -48,15 +46,15 @@ class UserAdmin(DjangoUserAdmin):
         )}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'date_birth')}),
     )
-    ordering = ('id', )
-    list_display = ('full_name', 'id', 'social', 'sub', 'email')
+    ordering = ('-date_joined', )
+    list_filter = ('social', 'date_joined', 'last_login')
+    list_display = ('full_name', 'email', 'date_joined', 'last_login', 'social', 'id', 'sub')
     search_fields = ('full_name', 'id')
+    readonly_fields=('id', 'email', 'social')
 
 @admin.register(Goal)
 class GoalAdmin(admin.ModelAdmin):
-    #actions = None
-    #list_display_links = None
-    
+    actions = None
     def has_add_permission(self, request, obj=None):
         return False
     def has_delete_permission(self, request, obj=None):
@@ -67,22 +65,22 @@ class GoalAdmin(admin.ModelAdmin):
 
 @admin.register(UserGoal)
 class UserGoalAdmin(admin.ModelAdmin):
-    #actions = None
-    #list_display_links = None
-    '''
+    actions = None
+    list_display_links = None
     def has_add_permission(self, request, obj=None):
         return False
     def has_delete_permission(self, request, obj=None):
         return False
     def has_change_permission(self, request, obj=None):
-        return False'''
+        return False
     
     fieldsets = (
-        (None, {'fields': ('user', 'goal', 'select_date', 'input_date', 'diary')}),
+        (None, {'fields': ('user', 'goal', 'select_date', 'input_date')}),
         (None, {'fields': (
             'success',
             'active',
         )}),
     )
-    list_display = ('user', 'goal', 'select_date', 'input_date', 'diary', 'success', 'active')
-    search_fields = ('select_date', 'diary')
+    list_filter = ('goal', 'select_date', 'success', 'active')
+    list_display = ('user', 'goal', 'select_date', 'input_date', 'success', 'active')
+    search_fields = ('select_date', 'user__full_name', 'user__id')
