@@ -1,22 +1,15 @@
-from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from django.views import View
-from django.shortcuts import redirect
 from django.utils import timezone
-from django.conf import settings
 
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.decorators import api_view, permission_classes, 
-                                        authentication_classes
+from rest_framework.decorators import permission_classes, authentication_classes
 
 from pick_restful.models import User, Goal, UserGoal
 from pick_restful.selectors import user_goal_info
-from pick_restful.services import user_record_login, user_get_or_create, 
-                                        jwt_login, user_goal_detail_set
+from pick_restful.services import user_record_login, user_get_or_create, jwt_login, user_goal_detail_set
 
 from django.db.models import Q
 from django.db.models import F
@@ -95,8 +88,7 @@ class UserGoalDetailGet(APIView):
                 dateCount = request.data['dateCount']
                 needColumn = request.data['needColumn']
                 startDate = request.data['startDate']
-                endDate = datetime.datetime.strptime(startDate, '%Y-%m-%d').date()
-                        + datetime.timedelta(days=dateCount-1)
+                endDate = datetime.datetime.strptime(startDate, '%Y-%m-%d').date() + datetime.timedelta(days=dateCount-1)
                 queryset = UserGoal.objects.filter(
                         user=user, 
                         select_date__range=[startDate, endDate], 
