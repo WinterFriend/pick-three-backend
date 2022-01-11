@@ -95,6 +95,27 @@ def user_goal_detail_set(
     for obj in userGoalList:
         defaults = {column : obj[column] for column in updateColumn}
         defaults['active'] = 1
-        print(defaults)
         UserGoal.objects.update_or_create(select_date=date, user=User.objects.get(id=user_id), 
             goal=Goal.objects.get(id=int(obj['goalId'])), defaults=defaults)
+
+
+def get_user_profile(user: str) -> dict:
+    user = User.objects.get(id=user)
+
+    dictionary = {}
+    dictionary['name'] = user.full_name
+    dictionary['birth'] = user.date_birth
+    dictionary['email'] = user.email
+    return dictionary
+
+@transaction.atomic
+def set_user_profile(*, user: str, **data) -> None:
+    user = User.objects.get(id=user)
+    dictionary = {}
+    if 'name' in data['updateColumn']:
+        user.full_name = data['name']
+    if 'email' in data['updateColumn']:
+        user.email = data['email']
+    if 'birth' in data['updateColumn']:
+        user.date_birth = data['birth'] 
+    user.save()

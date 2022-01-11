@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from pick_restful import apis
-from pick_restful.apis import GoogleLoginView, A, InfoGoalList, UserGoalDetailGet, UserGoalDetailSet
+from pick_restful.apis import GoogleLoginView, A, InfoGoalList, UserGoalDetailGet, UserGoalDetailSet, UserProfile
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
@@ -35,4 +35,6 @@ urlpatterns = [
     path('info/goal/list', InfoGoalList.as_view(), name='info_goal_list'),
     path('user/goal/detail/get', UserGoalDetailGet.as_view(), name='user_goal_detail_get'),
     path('user/goal/detail/set', UserGoalDetailSet.as_view(), name='user_goal_detail_set'),
+
+    path('user/profile', UserProfile.as_view(), name='user_profile'),
 ]

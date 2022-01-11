@@ -35,7 +35,7 @@ def user_goal_info(
         dictionary['userGoalList'][cur_str] = []
         cur_date = cur_date + datetime.timedelta(days=1)
 
-    for idx, query in enumerate(queryset):
+    for query in queryset:
         select_date_str = query['select_date'].strftime("%Y-%m-%d")
         dictionary['userGoalList'][select_date_str].append({})
         dictionary['userGoalList'][select_date_str][-1]['date'] = select_date_str

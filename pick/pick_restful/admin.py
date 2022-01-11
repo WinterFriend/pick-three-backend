@@ -20,7 +20,7 @@ class SocialAdmin(admin.ModelAdmin):
 
 class UserGoalInline(admin.TabularInline):
     model = UserGoal
-    fields = ('goal', 'select_date', 'input_date', 'success', 'active')
+    fields = ('goal', 'select_date', 'input_date', 'diary', 'success', 'active')
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):

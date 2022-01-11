@@ -10,6 +10,7 @@ from rest_framework.decorators import permission_classes, authentication_classes
 from pick_restful.models import User, Goal, UserGoal
 from pick_restful.selectors import user_goal_info
 from pick_restful.services import user_record_login, user_get_or_create, jwt_login, user_goal_detail_set
+from pick_restful.services import get_user_profile, set_user_profile
 
 from django.db.models import Q
 from django.db.models import F
@@ -18,22 +19,6 @@ import requests, json, datetime
 JWT_authenticator = JWTAuthentication()
 def index(request):
         return HttpResponse("연결성공")
-
-class A(APIView):
-        permission_classes = [IsAuthenticated]
-
-        def get(self, request):
-                response = JWT_authenticator.authenticate(request)
-                user , token = response
-                print(token['user_id'])
-                return JsonResponse({"message": "Hello, world!"})
-
-        def post(self, request):
-                response = JWT_authenticator.authenticate(request)
-                user , token = response
-                print(token.payload)
-                return JsonResponse({"message2": "Hello, world!"})
-
 
 class GoogleLoginView(APIView):
         permission_classes = [AllowAny]
@@ -115,3 +100,23 @@ class UserGoalDetailSet(APIView):
                 user_goal_detail_set(date, user, userGoalList, updateColumn)
 
                 return JsonResponse({"success" : "success"}, safe=False)
+
+class UserProfile(APIView):
+        permission_classes = [IsAuthenticated]
+
+        def get(self, request):
+                response = JWT_authenticator.authenticate(request)
+                user , token = response
+                user = token['user_id']
+
+                return JsonResponse(
+                        get_user_profile(user), 
+                        safe=False)
+
+        def post(self, request):
+                response = JWT_authenticator.authenticate(request)
+                user , token = response
+                user = token['user_id']
+                set_user_profile(user=user, **request.data)
+                return JsonResponse({'success':'success'}, 
+                        safe=False)
