@@ -16,17 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from pick_restful import apis
-from pick_restful.apis import GoogleLoginView, A, InfoGoalList, UserGoalDetailGet, UserGoalDetailSet, UserProfile
+from pick_restful.apis import GoogleLoginView, InfoGoalList, UserGoalDetailGet, UserGoalDetailSet, UserProfile
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', apis.index),
     path('login/google/',GoogleLoginView.as_view()),
-
-    path('a/',A.as_view()),
-    path('a',A.as_view()),
 
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pari'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

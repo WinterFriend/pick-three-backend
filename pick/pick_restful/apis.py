@@ -9,16 +9,12 @@ from rest_framework.decorators import permission_classes, authentication_classes
 
 from pick_restful.models import User, Goal, UserGoal
 from pick_restful.selectors import user_goal_info
-from pick_restful.services import user_record_login, user_get_or_create, jwt_login, user_goal_detail_set
-from pick_restful.services import get_user_profile, set_user_profile
+from pick_restful.services import user_record_login, user_get_or_create, jwt_login
+from pick_restful.services import get_user_profile, set_user_profile, user_goal_detail_set
 
-from django.db.models import Q
-from django.db.models import F
 import requests, json, datetime
 
 JWT_authenticator = JWTAuthentication()
-def index(request):
-        return HttpResponse("연결성공")
 
 class GoogleLoginView(APIView):
         permission_classes = [AllowAny]
