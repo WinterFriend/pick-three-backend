@@ -102,10 +102,10 @@ def user_goal_detail_set(
 def get_user_profile(user: str) -> dict:
     user = User.objects.get(id=user)
 
-    dictionary = {}
-    dictionary['name'] = user.full_name
-    dictionary['birth'] = user.date_birth
-    dictionary['email'] = user.email
+    dictionary = {'profile':{}}
+    dictionary['profile']['name'] = user.full_name
+    dictionary['profile']['birth'] = user.date_birth
+    dictionary['profile']['email'] = user.email
     return dictionary
 
 @transaction.atomic
@@ -113,9 +113,9 @@ def set_user_profile(*, user: str, **data) -> None:
     user = User.objects.get(id=user)
     dictionary = {}
     if 'name' in data['updateColumn']:
-        user.full_name = data['name']
+        user.full_name = data['profile']['name']
     if 'email' in data['updateColumn']:
-        user.email = data['email']
+        user.email = data['profile']['email']
     if 'birth' in data['updateColumn']:
-        user.date_birth = data['birth'] 
+        user.date_birth = data['profile']['birth'] 
     user.save()
