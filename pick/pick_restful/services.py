@@ -105,17 +105,29 @@ def get_user_profile(user: str) -> dict:
     dictionary = {'profile':{}}
     dictionary['profile']['name'] = user.full_name
     dictionary['profile']['birth'] = user.date_birth
+    dictionary['profile']['social'] = user.social.platform
     dictionary['profile']['email'] = user.email
     return dictionary
 
 @transaction.atomic
 def set_user_profile(*, user: str, **data) -> None:
     user = User.objects.get(id=user)
-    dictionary = {}
     if 'name' in data['updateColumn']:
         user.full_name = data['profile']['name']
-    if 'email' in data['updateColumn']:
-        user.email = data['profile']['email']
+    # if 'email' in data['updateColumn']:
+    #     user.email = data['profile']['email']
     if 'birth' in data['updateColumn']:
         user.date_birth = data['profile']['birth'] 
+    user.save()
+    
+@transaction.atomic
+def delete_user(*, user: str) -> None:
+    user = User.objects.get(id=user)
+    user.is_active = 0
+    user.save()
+    
+@transaction.atomic
+def delete_user_undo(*, user: str) -> None:
+    user = User.objects.get(id=user)
+    user.is_active = 1
     user.save()

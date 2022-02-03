@@ -48,9 +48,9 @@ class UserAdmin(DjangoUserAdmin):
     )
     ordering = ('-date_joined', )
     list_filter = ('social', 'date_joined', 'last_login')
-    list_display = ('full_name', 'email', 'date_joined', 'last_login', 'social', 'id', 'sub')
+    list_display = ('full_name', 'email', 'date_joined', 'last_login', 'social', 'id', 'sub', 'is_active')
     search_fields = ('full_name', 'id')
-    readonly_fields=('id', 'email', 'social')
+    readonly_fields = ('full_name', 'email', 'social', 'id', 'sub', 'password', 'is_staff', 'is_superuser', 'last_login', 'date_joined', 'date_birth',)
 
 @admin.register(Goal)
 class GoalAdmin(admin.ModelAdmin):

@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from pick_restful import apis
-from pick_restful.apis import GoogleLoginView, InfoGoalList, UserGoalDetailGet, UserGoalDetailSet, UserProfile
+from pick_restful.apis import GoogleLoginView, InfoGoalList, UserGoalDetailGet, UserGoalDetailSet, UserProfile, UserDelete, UserDeleteUndo
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
@@ -24,13 +24,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/google/',GoogleLoginView.as_view()),
 
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pari'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pari'),
+    path('token/f', TokenRefreshView.as_view(), name='token_refresh'),
+    # path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 
     path('info/goal/list', InfoGoalList.as_view(), name='info_goal_list'),
     path('user/goal/detail/get', UserGoalDetailGet.as_view(), name='user_goal_detail_get'),
     path('user/goal/detail/set', UserGoalDetailSet.as_view(), name='user_goal_detail_set'),
 
     path('user/profile', UserProfile.as_view(), name='user_profile'),
+    path('user/delete', UserDelete.as_view(), name='user_delete'),
+    path('user/delete/undo', UserDeleteUndo.as_view(), name='user_delete_undo'),
 ]
