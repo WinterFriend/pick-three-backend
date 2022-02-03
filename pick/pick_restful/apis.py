@@ -9,7 +9,7 @@ from rest_framework.decorators import permission_classes, authentication_classes
 
 from pick_restful.models import User, Goal, UserGoal
 from pick_restful.selectors import user_goal_info
-from pick_restful.services import user_record_login, user_get_or_create, jwt_login
+from pick_restful.services import user_record_login, user_get_or_create, jwt_login, delete_user, delete_user_undo
 from pick_restful.services import get_user_profile, set_user_profile, user_goal_detail_set
 
 import requests, json, datetime
@@ -114,5 +114,25 @@ class UserProfile(APIView):
                 user , token = response
                 user = token['user_id']
                 set_user_profile(user=user, **request.data)
+                return JsonResponse({'success':'success'}, 
+                        safe=False)
+                
+class UserDelete(APIView):
+        permission_classes = [IsAuthenticated]
+
+        def post(self, request):
+                response = JWT_authenticator.authenticate(request)
+                user , token = response
+                user = token['user_id']
+                delete_user(user=user)
+                return JsonResponse({'success':'success'}, 
+                        safe=False)
+                
+class UserDeleteUndo(APIView):
+        permission_classes = [AllowAny]
+
+        def post(self, request):
+                user = request.data['uuid']
+                delete_user_undo(user=user)
                 return JsonResponse({'success':'success'}, 
                         safe=False)
