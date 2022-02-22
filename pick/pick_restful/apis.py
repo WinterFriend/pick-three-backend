@@ -1,5 +1,4 @@
 from django.http import HttpResponse, JsonResponse
-from django.utils import timezone
 
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -20,12 +19,20 @@ class GoogleLoginView(APIView):
         permission_classes = [AllowAny]
 
         def get(self,request):
-                token = request.headers["Authorization"]
+                print(request.headers)
+                
+                try:
+                        token = request.headers["Authorization"]
+                except KeyError:
+                        score_dic[score] = 1
+                        print("error : not found Authorization in headers")
+                        return JsonResponse({'err_msg': 'not found Authorization in headers'})
+                
                 url = 'https://oauth2.googleapis.com/tokeninfo?id_token='
                 response = requests.get(url+token)
                 accept_status = response.status_code
                 if accept_status != 200:
-                        print("fail")
+                        print("fail : oauth2.googleapis.com login fail")
                         return JsonResponse({'err_msg': 'failed to asignin'}, 
                                                 status=accept_status)
                 
@@ -37,8 +44,8 @@ class GoogleLoginView(APIView):
                         'first_name'    : user_json['given_name'],
                         'last_name'     : user_json['family_name'],
                         'full_name'     : user_json['name'],
-                        'date_birth'    : timezone.localtime(),
-                        'last_login'    : timezone.localtime(),
+                        'date_birth'    : datetime.datetime.now(),
+                        'last_login'    : datetime.datetime.now(),
                 }
                 user, _ = user_get_or_create(**user_data)
 
@@ -50,6 +57,8 @@ class InfoGoalList(APIView):
         permission_classes = [IsAuthenticated]
 
         def get(self, request):
+                
+                # need to go service
                 queryset = Goal.objects.all().extra(
                         select={'activeIcon'    : 'active_icon',
                                 'inactiveIcon'  : 'inactive_icon',
@@ -57,6 +66,7 @@ class InfoGoalList(APIView):
                                 'subColor'      : 'sub_color',
                         }).values('id', 'name', 'description', 'activeIcon',
                                 'inactiveIcon', 'mainColor', 'subColor')
+                        
                 return JsonResponse(list(queryset), safe=False)
 
 class UserGoalDetailGet(APIView):
@@ -70,10 +80,13 @@ class UserGoalDetailGet(APIView):
                 needColumn = request.data['needColumn']
                 startDate = request.data['startDate']
                 endDate = datetime.datetime.strptime(startDate, '%Y-%m-%d').date() + datetime.timedelta(days=dateCount-1)
+                
+                # need to go service.py
                 queryset = UserGoal.objects.filter(
                         user=user, 
                         select_date__range=[startDate, endDate], 
                         active=1).values('select_date', 'goal', 'success', 'diary')
+                
                 return JsonResponse(
                         user_goal_info(
                                 queryset, 
