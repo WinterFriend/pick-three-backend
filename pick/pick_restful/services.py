@@ -3,7 +3,7 @@ from django.db import transaction
 from django.core.management.utils import get_random_secret_key
 from rest_framework_simplejwt.tokens import RefreshToken
 from pick_restful.models import User, SocialPlatform, UserGoal, Goal
-from django.utils import timezone
+from datetime import datetime
 from utils import get_now
 
 def user_create_superuser(id, password=None, **extra_fields) -> User:
@@ -70,7 +70,7 @@ def user_get_or_create(
     # 나중에 필터에 소셜도 필요할 수 있음
     user = User.objects.filter(sub=sub).first()
     if user:
-        user.last_login = timezone.localtime()
+        user.last_login = datetime.now()
         user.save()
         return user, False
 
@@ -94,6 +94,7 @@ def user_goal_detail_set(
     user_goal.update(active=0)
     for obj in userGoalList:
         defaults = {column : obj[column] for column in updateColumn}
+        print(defaults)
         defaults['active'] = 1
         UserGoal.objects.update_or_create(select_date=date, user=User.objects.get(id=user_id), 
             goal=Goal.objects.get(id=int(obj['goalId'])), defaults=defaults)
@@ -124,6 +125,7 @@ def set_user_profile(*, user: str, **data) -> None:
 def delete_user(*, user: str) -> None:
     user = User.objects.get(id=user)
     user.is_active = 0
+    user.sub = 0
     user.save()
     
 @transaction.atomic
