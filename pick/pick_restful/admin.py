@@ -46,7 +46,7 @@ class UserAdmin(DjangoUserAdmin):
         )}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'date_birth')}),
     )
-    ordering = ('-date_joined', )
+    ordering = ('-sub', '-date_joined')
     list_filter = ('social', 'date_joined', 'last_login')
     list_display = ('full_name', 'email', 'date_joined', 'last_login', 'social', 'id', 'sub', 'is_active')
     search_fields = ('full_name', 'id')
