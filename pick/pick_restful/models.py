@@ -22,7 +22,7 @@ class SocialPlatform(models.Model):
 class User(AbstractUser):
     username        = None
     id              = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True, verbose_name="UUID")
-    date_birth      = models.DateField(default=timezone.localtime, verbose_name="생일")
+    date_birth      = models.DateField(default=timezone.now, verbose_name="생일")
     sub             = models.CharField(max_length=64, db_index=True, null=False, blank=False, verbose_name="SUB") # 현재 sub는 unique=True 아님
     social          = models.ForeignKey(SocialPlatform, on_delete=models.CASCADE, max_length=20, default=1, verbose_name="가입 경로") # 무조건 social_platform에 1개이상 있어야함.
     full_name       = models.CharField(max_length=64, null=False, blank=False, default='', verbose_name="이름")
@@ -66,7 +66,7 @@ class Goal(models.Model):
 
 class UserGoal(models.Model):
     goal            = models.ForeignKey(Goal, on_delete=models.CASCADE, max_length=20, verbose_name="목표") # 무조건 goal에 1개이상 있어야함.
-    select_date     = models.DateField(default=timezone.localtime, verbose_name="선택 날짜")
+    select_date     = models.DateField(default=timezone.now, verbose_name="선택 날짜")
     input_date      = models.DateTimeField(default=datetime.now, verbose_name="수정 시간")
     diary           = models.TextField(max_length=200, verbose_name="일기", default='')
     user            = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="사용자")
