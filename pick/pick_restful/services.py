@@ -45,6 +45,23 @@ def user_create(
 
     return user
 
+def guest_create() -> User:
+    extra_fields = {
+        'is_staff': False,
+        'is_superuser': False,
+    }
+
+    user = User(sub=0,
+                social=SocialPlatform.objects.get(platform="guest"),
+                full_name='손님',
+                **extra_fields)
+    user.set_unusable_password()
+
+    user.full_clean()
+    user.save()
+
+    return user
+
 def user_record_login(*, user: User) -> User:
     user.last_login = get_now()
     user.save()
@@ -61,11 +78,11 @@ def user_change_secret_key(*, user: User) -> User:
 
 @transaction.atomic
 def user_get_or_create(
-    *, 
-    sub: str, 
-    social: str, 
+    *,
+    sub: str,
+    social: str,
     **extra_data
-) -> Tuple[User, bool]:
+) -> Tuple[User, bool]: # bool : 생성했으면 true 아니면 false
 
     # 나중에 필터에 소셜도 필요할 수 있음
     user = User.objects.filter(sub=sub).first()
@@ -75,6 +92,22 @@ def user_get_or_create(
         return user, False
 
     return user_create(sub=sub, social=social, **extra_data), True
+
+def guest_get(user: str) -> Tuple[User, str]:
+    try:
+        user = User.objects.filter(id=user).first()
+    except:
+        return None, "Format not possible"
+    
+    if user:
+        if str(user.social) == "guest":
+            user.last_login = datetime.now()
+            user.save()
+            return user, "success"
+        else:
+            return None, "User is not guest"
+    
+    return None, "User not found"
 
 def jwt_login(user: User):
     refresh = RefreshToken.for_user(user)
