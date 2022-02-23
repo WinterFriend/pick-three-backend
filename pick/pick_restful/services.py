@@ -68,7 +68,6 @@ def user_record_login(*, user: User) -> User:
 
     return user
 
-@transaction.atomic
 def user_change_secret_key(*, user: User) -> User:
     user.secret_key = get_random_secret_key()
     user.full_clean()
@@ -76,7 +75,6 @@ def user_change_secret_key(*, user: User) -> User:
 
     return user
 
-@transaction.atomic
 def user_get_or_create(
     *,
     sub: str,
@@ -127,7 +125,6 @@ def user_goal_detail_set(
     user_goal.update(active=0)
     for obj in userGoalList:
         defaults = {column : obj[column] for column in updateColumn}
-        print(defaults)
         defaults['active'] = 1
         UserGoal.objects.update_or_create(select_date=date, user=User.objects.get(id=user_id), 
             goal=Goal.objects.get(id=int(obj['goalId'])), defaults=defaults)
@@ -143,16 +140,19 @@ def get_user_profile(user: str) -> dict:
     dictionary['profile']['email'] = user.email
     return dictionary
 
-@transaction.atomic
-def set_user_profile(*, user: str, **data) -> None:
+def set_user_profile(*, user: str, **data) -> bool:
     user = User.objects.get(id=user)
-    if 'name' in data['updateColumn']:
-        user.full_name = data['profile']['name']
-    # if 'email' in data['updateColumn']:
-    #     user.email = data['profile']['email']
-    if 'birth' in data['updateColumn']:
-        user.date_birth = data['profile']['birth'] 
+    try:
+        if 'name' in data['updateColumn']:
+            user.full_name = data['profile']['name']
+        # if 'email' in data['updateColumn']:
+        #     user.email = data['profile']['email']
+        if 'birth' in data['updateColumn']:
+            user.date_birth = data['profile']['birth']
+    except:
+        return False
     user.save()
+    return True
     
 @transaction.atomic
 def delete_user(*, user: str) -> None:

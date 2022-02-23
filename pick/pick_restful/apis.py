@@ -141,9 +141,11 @@ class UserProfile(APIView):
                 response = JWT_authenticator.authenticate(request)
                 user , token = response
                 user = token['user_id']
-                set_user_profile(user=user, **request.data)
-                return JsonResponse({'success':'success'}, 
-                        safe=False)
+                success = set_user_profile(user=user, **request.data)
+                if success:
+                        return JsonResponse({'success':'success'}, safe=False, status=200)
+                else:
+                        return JsonResponse({'fail':'fail'}, safe=False, status=400)
                 
 class UserDelete(APIView):
         permission_classes = [IsAuthenticated]
