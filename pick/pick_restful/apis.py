@@ -9,7 +9,7 @@ from rest_framework.decorators import permission_classes, authentication_classes
 from pick_restful.models import User, Goal, UserGoal
 from pick_restful.selectors import user_goal_info
 from pick_restful.services import user_record_login, user_get_or_create, jwt_login, delete_user, delete_user_undo
-from pick_restful.services import get_user_profile, set_user_profile, user_goal_detail_set
+from pick_restful.services import get_user_profile, guest_create, set_user_profile, user_goal_detail_set, guest_get
 
 import requests, json, datetime
 
@@ -19,12 +19,9 @@ class GoogleLoginView(APIView):
         permission_classes = [AllowAny]
 
         def get(self,request):
-                print(request.headers)
-                
                 try:
                         token = request.headers["Authorization"]
                 except KeyError:
-                        score_dic[score] = 1
                         print("error : not found Authorization in headers")
                         return JsonResponse({'err_msg': 'not found Authorization in headers'})
                 
@@ -32,7 +29,7 @@ class GoogleLoginView(APIView):
                 response = requests.get(url+token)
                 accept_status = response.status_code
                 if accept_status != 200:
-                        print("fail : oauth2.googleapis.com login fail")
+                        print("err_msg : oauth2.googleapis.com login fail")
                         return JsonResponse({'err_msg': 'failed to asignin'}, 
                                                 status=accept_status)
                 
@@ -52,6 +49,24 @@ class GoogleLoginView(APIView):
                 token = jwt_login(user=user)
                 print(token)
                 return JsonResponse(token)
+        
+class GuestLoginView(APIView):
+        permission_classes = [AllowAny]
+
+        def post(self, request):
+                try:
+                        user = request.data["Authorization"]
+                except KeyError:
+                        print("error : not found Authorization in headers")
+                        return JsonResponse({'err_msg': 'not found Authorization in headers'})
+                
+                user, msg = guest_get(user)
+                if msg == "success":
+                        token = jwt_login(user=user)
+                        print(token)
+                        return JsonResponse(token, status=200)
+                else:
+                        return JsonResponse({'err_msg': msg}, status=400)
 
 class InfoGoalList(APIView):
         permission_classes = [IsAuthenticated]
@@ -149,3 +164,11 @@ class UserDeleteUndo(APIView):
                 delete_user_undo(user=user)
                 return JsonResponse({'success':'success'}, 
                         safe=False)
+                
+class UserCreate(APIView):
+        permission_classes = [AllowAny]
+
+        def get(self, request):
+                user = guest_create()
+                
+                return JsonResponse({"idToken": user.id})
