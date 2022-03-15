@@ -17,14 +17,18 @@ from django.contrib import admin
 from django.urls import path
 from pick_restful import apis
 from pick_restful.apis import GoogleLoginView, InfoGoalList, UserGoalDetailGet, UserGoalDetailSet, UserProfile, UserDelete, UserDeleteUndo
-from pick_restful.apis import UserCreate, GuestLoginView
+from pick_restful.apis import AppleLoginView, UserCreate, GuestLoginView, GoogleLink, AppleLink
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/google',GoogleLoginView.as_view()),
-    path('login/google/',GoogleLoginView.as_view()),
+    path('login/google', GoogleLoginView.as_view()),
+    path('login/google/', GoogleLoginView.as_view()),
+    path('login/apple', AppleLoginView.as_view(), name='login_apple'),
+    
+    path('link/google', GoogleLink.as_view(), name='link_google'),
+    path('link/apple', AppleLink.as_view(), name='link_apple'),
 
     # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pari'),
     path('token/f', TokenRefreshView.as_view(), name='token_refresh'),
