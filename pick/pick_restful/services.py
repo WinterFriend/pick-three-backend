@@ -53,7 +53,7 @@ def guest_create() -> User:
 
     user = User(sub=0,
                 social=SocialPlatform.objects.get(platform="guest"),
-                full_name='손님',
+                full_name='게스트',
                 **extra_fields)
     user.set_unusable_password()
 
@@ -68,7 +68,6 @@ def user_record_login(*, user: User) -> User:
 
     return user
 
-@transaction.atomic
 def user_change_secret_key(*, user: User) -> User:
     user.secret_key = get_random_secret_key()
     user.full_clean()
@@ -76,7 +75,6 @@ def user_change_secret_key(*, user: User) -> User:
 
     return user
 
-@transaction.atomic
 def user_get_or_create(
     *,
     sub: str,
@@ -92,6 +90,46 @@ def user_get_or_create(
         return user, False
 
     return user_create(sub=sub, social=social, **extra_data), True
+
+
+
+def user_link(
+    *,
+    platform: str,
+    id: str,
+    sub: str,
+    email: str,
+    first_name: str,
+    last_name: str,
+    full_name: str,
+) -> Tuple[User, bool]: # bool : 생성했으면 true 아니면 false
+    try:
+        user = User.objects.filter(id=id).first()
+    except:
+        return None, "형식이 올바르지 않습니다.\n지속적인 문제 발생 시, 문의하기를 이용해주세요."
+    
+    if user:
+        if str(user.social) == "guest":
+            f = User.objects.filter(sub=sub).first()
+            if f:
+                return None, "본 계정은 이미 가입된 상태입니다.\n지속적인 문제 발생 시, 문의하기를 이용해주세요."
+            else:
+                user.sub        = sub
+                user.social     = SocialPlatform.objects.get(platform=platform)
+                user.email      = email
+                # user.first_name = first_name
+                # user.last_name  = last_name
+                # user.full_name  = full_name
+                user.date_birth = datetime.now()
+                user.last_login = datetime.now()
+                user.save()
+                return user, "성공"
+        else:
+            return None, "게스트 계정이 아닙니다.\n지속적인 문제 발생 시, 문의하기를 이용해주세요."
+
+    return None, "계정을 찾을 수 없습니다.\n지속적인 문제 발생 시, 문의하기를 이용해주세요."
+
+
 
 def guest_get(user: str) -> Tuple[User, str]:
     try:
@@ -127,7 +165,6 @@ def user_goal_detail_set(
     user_goal.update(active=0)
     for obj in userGoalList:
         defaults = {column : obj[column] for column in updateColumn}
-        print(defaults)
         defaults['active'] = 1
         UserGoal.objects.update_or_create(select_date=date, user=User.objects.get(id=user_id), 
             goal=Goal.objects.get(id=int(obj['goalId'])), defaults=defaults)
@@ -143,25 +180,26 @@ def get_user_profile(user: str) -> dict:
     dictionary['profile']['email'] = user.email
     return dictionary
 
-@transaction.atomic
-def set_user_profile(*, user: str, **data) -> None:
+def set_user_profile(*, user: str, **data) -> bool:
     user = User.objects.get(id=user)
-    if 'name' in data['updateColumn']:
-        user.full_name = data['profile']['name']
-    # if 'email' in data['updateColumn']:
-    #     user.email = data['profile']['email']
-    if 'birth' in data['updateColumn']:
-        user.date_birth = data['profile']['birth'] 
+    try:
+        if 'name' in data['updateColumn']:
+            user.full_name = data['profile']['name']
+        # if 'email' in data['updateColumn']:
+        #     user.email = data['profile']['email']
+        if 'birth' in data['updateColumn']:
+            user.date_birth = data['profile']['birth']
+    except:
+        return False
     user.save()
+    return True
     
-@transaction.atomic
 def delete_user(*, user: str) -> None:
     user = User.objects.get(id=user)
     user.is_active = 0
     user.sub = 0
     user.save()
     
-@transaction.atomic
 def delete_user_undo(*, user: str) -> None:
     user = User.objects.get(id=user)
     user.is_active = 1
