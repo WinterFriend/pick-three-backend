@@ -229,14 +229,16 @@ class AppleLoginView(APIView):
                 try:
                         first_name = request.headers["firstName"]
                 except KeyError:
-                        print("error : not found firstName in headers")
-                        return JsonResponse({'err_msg': 'not found firstName in headers'})
+                        first_name = '용자'
+                        # print("error : not found firstName in headers")
+                        # return JsonResponse({'err_msg': 'not found firstName in headers'})
                 
                 try:
                         last_name = request.headers["lastName"]
                 except KeyError:
-                        print("error : not found lastName in headers")
-                        return JsonResponse({'err_msg': 'not found lastName in headers'})
+                        last_name = '사'
+                        # print("error : not found lastName in headers")
+                        # return JsonResponse({'err_msg': 'not found lastName in headers'})
                 
                 
                 
@@ -263,22 +265,24 @@ class AppleLink(APIView):
 
         def post(self, request):
                 try:
-                        token = request.data["appleidToken"]
+                        token = request.data["appleIdToken"]
                 except KeyError:
-                        print("error : not found idToken in headers")
-                        return JsonResponse({'err_msg': 'not found idToken in headers'})
+                        print("error : not found appleIdToken in body")
+                        return JsonResponse({'err_msg': 'not found appleIdToken in body'})
                 
                 try:
-                        first_name = request.data["firstName"]
+                        first_name = request.headers["firstName"]
                 except KeyError:
-                        print("error : not found firstName in headers")
-                        return JsonResponse({'err_msg': 'not found firstName in headers'})
+                        first_name = '용자'
+                        # print("error : not found firstName in headers")
+                        # return JsonResponse({'err_msg': 'not found firstName in headers'})
                 
                 try:
-                        last_name = request.data["lastName"]
+                        last_name = request.headers["lastName"]
                 except KeyError:
-                        print("error : not found lastName in headers")
-                        return JsonResponse({'err_msg': 'not found lastName in headers'})
+                        last_name = '사'
+                        # print("error : not found lastName in headers")
+                        # return JsonResponse({'err_msg': 'not found lastName in headers'})
                 
                 try:
                         user = request.data["guestIdToken"]
@@ -289,12 +293,11 @@ class AppleLink(APIView):
                 
                 data = jwt.decode(token, options={'verify_signature': False})
                 
-                user_json = response.json()
                 user_data = {
                         'platform'      : 'apple',
                         'id'            : user,
-                        'sub'           : user_json['sub'],
-                        'email'         : user_json['email'],
+                        'sub'           : data['sub'],
+                        'email'         : data['email'],
                         'first_name'    : first_name,
                         'last_name'     : last_name,
                         'full_name'     : last_name + ' ' + first_name,
